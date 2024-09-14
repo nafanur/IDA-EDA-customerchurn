@@ -6,8 +6,8 @@
 dari 5880 pelanggan, 49,3% diantaranya termasuk pelanggan churn, yaitu ada 2898 pelanggan dan 50,7% lainnya tetap menggunakan layanan aktif. 
 2.	Apakah ada pola dalam Pelanggan Churn berdasarkan jenis kelamin?
 Pelanggan Laki-laki lebih banyak churn (50,6%) dibandingkan Perempuan (49,4%).   
-3.	Apakah ada pola/preferensi pada Pelanggan Churn berdasarkan jenis layanan internet yang diberikan? Dan Fitur mana yang paling menguntungkan? DCL atau FIBER
-Pelanggan yg tdk mendapatkan internet lebih banyak churn (34,8%) daripada yg mendapatkan internet. Diantara DCL atau FIBER OPTIC, layanan internet yg paling menguntungkan adalah DSL, meskipun hanya berbanding tipis.  
+3.	Apakah ada pola/preferensi pada Pelanggan Churn berdasarkan jenis layanan internet yang diberikan? Dan Fitur mana yang paling menguntungkan? 
+Pelanggan yg tdk mendapatkan internet lebih banyak churn (34,8%) daripada yg mendapatkan internet. Diantara DCL atau FIBER OPTIC, layanan internet yg paling menguntungkan adalah DCL, meskipun hanya berbanding tipis.  
 4.	Apa jenis layanan yang paling menguntungkan?
 - Layanan telepon: Dari 2898 pelanggan yang churn, 50,9 % adalah pelanggan tidak menggunakan layanan telepon. Layanan telepon memberikan nilai tambah bagi pelanggan.
 - Beberapa jalur telepon: Dari 2898 pelanggan yang churn, 50,9 % adalah pelanggan tidak menggunakan layanan telepon. Namun, 25,2% adalah pelanggan churn yang memiliki beberapa jalur telepon. Maka, layanan ini kurang menguntungkan bagi pelanggan.
