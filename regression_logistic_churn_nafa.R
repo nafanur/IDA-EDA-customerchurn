@@ -1,0 +1,819 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOOYXevNpU9AG5IwDLRaz/K",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "ir",
+      "display_name": "R"
+    },
+    "language_info": {
+      "name": "R"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/nafanur/IDA-EDA-customerchurn/blob/main/regression_logistic_churn_nafa.R\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "path = '/content/drive/MyDrive/Colab Notebooks/churn_logistik.csv'"
+      ],
+      "metadata": {
+        "id": "pOaeNIXDBIAl"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 1000
+        },
+        "id": "k_7oLups9_ZQ",
+        "outputId": "e6f3bf4b-f0ba-4d9d-9364-440e664f335d"
+      },
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<table class=\"dataframe\">\n",
+              "<caption>A data.frame: 5880 × 21</caption>\n",
+              "<thead>\n",
+              "\t<tr><th scope=col>customerID</th><th scope=col>gender</th><th scope=col>SeniorCitizen</th><th scope=col>Partner</th><th scope=col>Dependents</th><th scope=col>tenure</th><th scope=col>PhoneService</th><th scope=col>MultipleLines</th><th scope=col>InternetService</th><th scope=col>OnlineSecurity</th><th scope=col>⋯</th><th scope=col>DeviceProtection</th><th scope=col>TechSupport</th><th scope=col>StreamingTV</th><th scope=col>StreamingMovies</th><th scope=col>Contract</th><th scope=col>PaperlessBilling</th><th scope=col>PaymentMethod</th><th scope=col>MonthlyCharges</th><th scope=col>TotalCharges</th><th scope=col>Churn</th></tr>\n",
+              "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>⋯</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th></tr>\n",
+              "</thead>\n",
+              "<tbody>\n",
+              "\t<tr><td>CUST0000</td><td>1</td><td>0</td><td>0</td><td>1</td><td>23</td><td>0</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>3</td><td> 49.85</td><td>1146.55</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST0001</td><td>0</td><td>0</td><td>1</td><td>0</td><td>43</td><td>0</td><td>0</td><td>2</td><td>2</td><td>⋯</td><td>2</td><td>1</td><td>2</td><td>1</td><td>1</td><td>0</td><td>2</td><td>100.70</td><td>4330.10</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0002</td><td>1</td><td>1</td><td>0</td><td>0</td><td>51</td><td>1</td><td>1</td><td>2</td><td>1</td><td>⋯</td><td>2</td><td>2</td><td>1</td><td>1</td><td>2</td><td>0</td><td>1</td><td> 97.33</td><td>4963.83</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0003</td><td>1</td><td>1</td><td>0</td><td>0</td><td>72</td><td>1</td><td>2</td><td>2</td><td>2</td><td>⋯</td><td>2</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>4</td><td>101.38</td><td>7299.36</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST0004</td><td>1</td><td>1</td><td>0</td><td>0</td><td>25</td><td>1</td><td>2</td><td>2</td><td>1</td><td>⋯</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>0</td><td>1</td><td> 52.22</td><td>1305.50</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0005</td><td>0</td><td>0</td><td>1</td><td>0</td><td>35</td><td>1</td><td>1</td><td>2</td><td>1</td><td>⋯</td><td>1</td><td>2</td><td>2</td><td>2</td><td>2</td><td>0</td><td>4</td><td>116.96</td><td>4093.60</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST0006</td><td>1</td><td>0</td><td>1</td><td>0</td><td>17</td><td>0</td><td>0</td><td>2</td><td>1</td><td>⋯</td><td>1</td><td>2</td><td>1</td><td>2</td><td>2</td><td>1</td><td>3</td><td> 91.53</td><td>1556.01</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0007</td><td>1</td><td>0</td><td>1</td><td>1</td><td>18</td><td>1</td><td>1</td><td>2</td><td>1</td><td>⋯</td><td>2</td><td>2</td><td>1</td><td>2</td><td>2</td><td>0</td><td>2</td><td> 26.52</td><td> 477.36</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0008</td><td>1</td><td>0</td><td>0</td><td>0</td><td>27</td><td>0</td><td>0</td><td>2</td><td>2</td><td>⋯</td><td>1</td><td>2</td><td>1</td><td>1</td><td>2</td><td>0</td><td>2</td><td> 67.77</td><td>1829.79</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0009</td><td>0</td><td>0</td><td>0</td><td>0</td><td>15</td><td>0</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0</td><td>1</td><td> 86.45</td><td>1296.75</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0010</td><td>1</td><td>1</td><td>1</td><td>0</td><td>69</td><td>1</td><td>2</td><td>1</td><td>2</td><td>⋯</td><td>2</td><td>2</td><td>1</td><td>2</td><td>1</td><td>0</td><td>1</td><td> 36.87</td><td>2544.03</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0011</td><td>1</td><td>0</td><td>1</td><td>0</td><td>15</td><td>1</td><td>1</td><td>2</td><td>1</td><td>⋯</td><td>2</td><td>2</td><td>2</td><td>2</td><td>3</td><td>1</td><td>3</td><td>110.18</td><td>1652.70</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST0012</td><td>1</td><td>0</td><td>0</td><td>1</td><td>42</td><td>1</td><td>2</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0</td><td>2</td><td> 95.41</td><td>4007.22</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST0013</td><td>1</td><td>0</td><td>0</td><td>0</td><td>34</td><td>1</td><td>2</td><td>2</td><td>1</td><td>⋯</td><td>1</td><td>1</td><td>1</td><td>2</td><td>3</td><td>1</td><td>4</td><td> 28.14</td><td> 956.76</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST0014</td><td>0</td><td>0</td><td>1</td><td>1</td><td>48</td><td>1</td><td>2</td><td>2</td><td>1</td><td>⋯</td><td>1</td><td>1</td><td>2</td><td>1</td><td>1</td><td>1</td><td>3</td><td>111.32</td><td>5343.36</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0015</td><td>1</td><td>0</td><td>0</td><td>1</td><td> 8</td><td>0</td><td>0</td><td>1</td><td>1</td><td>⋯</td><td>2</td><td>1</td><td>2</td><td>2</td><td>2</td><td>1</td><td>3</td><td> 60.44</td><td> 483.52</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0016</td><td>0</td><td>1</td><td>0</td><td>0</td><td>10</td><td>1</td><td>1</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td><td>3</td><td> 65.25</td><td> 652.50</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST0017</td><td>0</td><td>0</td><td>0</td><td>0</td><td> 5</td><td>0</td><td>0</td><td>2</td><td>1</td><td>⋯</td><td>2</td><td>1</td><td>2</td><td>2</td><td>3</td><td>1</td><td>2</td><td> 98.31</td><td> 491.55</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST0018</td><td>0</td><td>0</td><td>0</td><td>1</td><td>48</td><td>1</td><td>1</td><td>1</td><td>1</td><td>⋯</td><td>1</td><td>2</td><td>2</td><td>2</td><td>3</td><td>1</td><td>1</td><td> 84.40</td><td>4051.20</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0019</td><td>1</td><td>0</td><td>0</td><td>1</td><td>26</td><td>0</td><td>0</td><td>1</td><td>1</td><td>⋯</td><td>1</td><td>2</td><td>1</td><td>2</td><td>3</td><td>0</td><td>2</td><td> 63.75</td><td>1657.50</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0020</td><td>0</td><td>1</td><td>0</td><td>0</td><td>23</td><td>0</td><td>0</td><td>2</td><td>1</td><td>⋯</td><td>2</td><td>2</td><td>2</td><td>2</td><td>3</td><td>1</td><td>4</td><td> 45.96</td><td>1057.08</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST0021</td><td>1</td><td>1</td><td>0</td><td>1</td><td>62</td><td>0</td><td>0</td><td>2</td><td>2</td><td>⋯</td><td>1</td><td>1</td><td>2</td><td>2</td><td>2</td><td>0</td><td>2</td><td> 71.69</td><td>4444.78</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST0022</td><td>0</td><td>1</td><td>1</td><td>0</td><td>13</td><td>1</td><td>2</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2</td><td>1</td><td>4</td><td> 77.92</td><td>1012.96</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0023</td><td>0</td><td>0</td><td>1</td><td>0</td><td> 9</td><td>1</td><td>1</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2</td><td>1</td><td>4</td><td> 83.09</td><td> 747.81</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0024</td><td>0</td><td>1</td><td>0</td><td>1</td><td>20</td><td>1</td><td>2</td><td>2</td><td>2</td><td>⋯</td><td>1</td><td>2</td><td>1</td><td>2</td><td>3</td><td>0</td><td>4</td><td> 80.51</td><td>1610.20</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0025</td><td>0</td><td>0</td><td>0</td><td>0</td><td>57</td><td>0</td><td>0</td><td>2</td><td>1</td><td>⋯</td><td>1</td><td>1</td><td>1</td><td>1</td><td>3</td><td>0</td><td>2</td><td> 81.73</td><td>4658.61</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0026</td><td>0</td><td>0</td><td>0</td><td>0</td><td>24</td><td>0</td><td>0</td><td>1</td><td>1</td><td>⋯</td><td>1</td><td>1</td><td>2</td><td>2</td><td>1</td><td>0</td><td>4</td><td> 67.57</td><td>1621.68</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST0027</td><td>0</td><td>1</td><td>1</td><td>0</td><td>33</td><td>1</td><td>1</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td><td>4</td><td> 76.19</td><td>2514.27</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST0028</td><td>0</td><td>0</td><td>1</td><td>1</td><td>20</td><td>1</td><td>2</td><td>2</td><td>2</td><td>⋯</td><td>2</td><td>1</td><td>1</td><td>2</td><td>1</td><td>1</td><td>3</td><td> 48.86</td><td> 977.20</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST0029</td><td>0</td><td>0</td><td>0</td><td>1</td><td>60</td><td>0</td><td>0</td><td>2</td><td>1</td><td>⋯</td><td>1</td><td>1</td><td>2</td><td>1</td><td>1</td><td>1</td><td>3</td><td> 35.84</td><td>2150.40</td><td>1</td></tr>\n",
+              "\t<tr><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋱</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr>\n",
+              "\t<tr><td>CUST5850</td><td>1</td><td>0</td><td>0</td><td>1</td><td>71</td><td>0</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td><td>4</td><td> 42.71</td><td>3032.41</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5851</td><td>1</td><td>0</td><td>0</td><td>1</td><td>61</td><td>1</td><td>1</td><td>1</td><td>1</td><td>⋯</td><td>2</td><td>1</td><td>1</td><td>2</td><td>2</td><td>0</td><td>2</td><td> 32.87</td><td>2005.07</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST5852</td><td>0</td><td>0</td><td>0</td><td>0</td><td>36</td><td>0</td><td>0</td><td>1</td><td>2</td><td>⋯</td><td>2</td><td>1</td><td>2</td><td>2</td><td>1</td><td>1</td><td>3</td><td> 51.55</td><td>1855.80</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST5853</td><td>0</td><td>0</td><td>0</td><td>1</td><td>24</td><td>0</td><td>0</td><td>2</td><td>2</td><td>⋯</td><td>2</td><td>2</td><td>2</td><td>1</td><td>1</td><td>1</td><td>1</td><td> 66.71</td><td>1601.04</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST5854</td><td>1</td><td>0</td><td>1</td><td>0</td><td>32</td><td>1</td><td>2</td><td>1</td><td>1</td><td>⋯</td><td>2</td><td>1</td><td>2</td><td>2</td><td>1</td><td>1</td><td>4</td><td> 50.10</td><td>1603.20</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST5855</td><td>0</td><td>1</td><td>1</td><td>1</td><td>59</td><td>1</td><td>1</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td><td>1</td><td>117.05</td><td>6905.95</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST5856</td><td>0</td><td>0</td><td>0</td><td>0</td><td> 5</td><td>1</td><td>2</td><td>1</td><td>1</td><td>⋯</td><td>2</td><td>2</td><td>2</td><td>1</td><td>3</td><td>0</td><td>2</td><td> 97.92</td><td> 489.60</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST5857</td><td>0</td><td>0</td><td>0</td><td>1</td><td>16</td><td>1</td><td>2</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td><td>1</td><td>116.61</td><td>1865.76</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5858</td><td>1</td><td>1</td><td>0</td><td>0</td><td>11</td><td>1</td><td>2</td><td>2</td><td>2</td><td>⋯</td><td>2</td><td>1</td><td>2</td><td>2</td><td>1</td><td>0</td><td>2</td><td> 57.32</td><td> 630.52</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST5859</td><td>0</td><td>1</td><td>0</td><td>1</td><td>35</td><td>0</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0</td><td>2</td><td> 50.47</td><td>1766.45</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5860</td><td>1</td><td>1</td><td>1</td><td>0</td><td>42</td><td>0</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td><td>4</td><td> 60.74</td><td>2551.08</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST5861</td><td>0</td><td>1</td><td>1</td><td>0</td><td>10</td><td>1</td><td>2</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>3</td><td> 72.28</td><td> 722.80</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5862</td><td>1</td><td>0</td><td>0</td><td>1</td><td> 8</td><td>1</td><td>2</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>1</td><td>1</td><td> 94.16</td><td> 753.28</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5863</td><td>0</td><td>1</td><td>1</td><td>0</td><td>26</td><td>1</td><td>2</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>108.11</td><td>2810.86</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5864</td><td>1</td><td>1</td><td>1</td><td>0</td><td> 3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>2</td><td> 66.32</td><td> 198.96</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST5865</td><td>1</td><td>0</td><td>0</td><td>1</td><td>59</td><td>0</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>1</td><td>3</td><td> 48.92</td><td>2886.28</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5866</td><td>1</td><td>0</td><td>0</td><td>1</td><td> 3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>2</td><td> 51.88</td><td> 155.64</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5867</td><td>0</td><td>0</td><td>0</td><td>1</td><td>38</td><td>0</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>1</td><td>4</td><td> 89.69</td><td>3408.22</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5868</td><td>0</td><td>1</td><td>1</td><td>1</td><td> 2</td><td>1</td><td>1</td><td>2</td><td>2</td><td>⋯</td><td>2</td><td>2</td><td>1</td><td>2</td><td>1</td><td>0</td><td>4</td><td> 76.76</td><td> 153.52</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5869</td><td>0</td><td>0</td><td>1</td><td>1</td><td>17</td><td>0</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0</td><td>3</td><td> 68.65</td><td>1167.05</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST5870</td><td>1</td><td>1</td><td>0</td><td>1</td><td>36</td><td>0</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0</td><td>1</td><td> 40.28</td><td>1450.08</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5871</td><td>0</td><td>0</td><td>0</td><td>0</td><td> 2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>⋯</td><td>1</td><td>2</td><td>1</td><td>2</td><td>2</td><td>0</td><td>3</td><td>107.55</td><td> 215.10</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5872</td><td>1</td><td>0</td><td>1</td><td>0</td><td>34</td><td>1</td><td>2</td><td>1</td><td>2</td><td>⋯</td><td>2</td><td>1</td><td>1</td><td>2</td><td>2</td><td>1</td><td>1</td><td> 98.10</td><td>3335.40</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5873</td><td>0</td><td>1</td><td>1</td><td>0</td><td>27</td><td>0</td><td>0</td><td>1</td><td>1</td><td>⋯</td><td>1</td><td>2</td><td>1</td><td>2</td><td>3</td><td>1</td><td>1</td><td> 34.06</td><td> 919.62</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5874</td><td>1</td><td>0</td><td>0</td><td>1</td><td>37</td><td>1</td><td>1</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td> 56.74</td><td>2099.38</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5875</td><td>1</td><td>0</td><td>1</td><td>1</td><td>71</td><td>1</td><td>1</td><td>2</td><td>2</td><td>⋯</td><td>1</td><td>2</td><td>1</td><td>1</td><td>1</td><td>1</td><td>2</td><td> 74.21</td><td>5268.91</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST5876</td><td>1</td><td>0</td><td>0</td><td>0</td><td>22</td><td>1</td><td>2</td><td>2</td><td>1</td><td>⋯</td><td>2</td><td>2</td><td>1</td><td>2</td><td>2</td><td>0</td><td>2</td><td> 65.43</td><td>1439.46</td><td>1</td></tr>\n",
+              "\t<tr><td>CUST5877</td><td>0</td><td>0</td><td>0</td><td>0</td><td>68</td><td>0</td><td>0</td><td>1</td><td>2</td><td>⋯</td><td>2</td><td>2</td><td>2</td><td>1</td><td>2</td><td>1</td><td>3</td><td> 59.78</td><td>4065.04</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST5878</td><td>0</td><td>0</td><td>1</td><td>1</td><td>14</td><td>0</td><td>0</td><td>1</td><td>2</td><td>⋯</td><td>2</td><td>2</td><td>2</td><td>2</td><td>1</td><td>1</td><td>2</td><td> 91.88</td><td>1286.32</td><td>0</td></tr>\n",
+              "\t<tr><td>CUST5879</td><td>0</td><td>1</td><td>1</td><td>0</td><td>23</td><td>1</td><td>1</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>2</td><td> 25.45</td><td> 585.35</td><td>1</td></tr>\n",
+              "</tbody>\n",
+              "</table>\n"
+            ],
+            "text/markdown": "\nA data.frame: 5880 × 21\n\n| customerID &lt;chr&gt; | gender &lt;int&gt; | SeniorCitizen &lt;int&gt; | Partner &lt;int&gt; | Dependents &lt;int&gt; | tenure &lt;int&gt; | PhoneService &lt;int&gt; | MultipleLines &lt;int&gt; | InternetService &lt;int&gt; | OnlineSecurity &lt;int&gt; | ⋯ ⋯ | DeviceProtection &lt;int&gt; | TechSupport &lt;int&gt; | StreamingTV &lt;int&gt; | StreamingMovies &lt;int&gt; | Contract &lt;int&gt; | PaperlessBilling &lt;int&gt; | PaymentMethod &lt;int&gt; | MonthlyCharges &lt;dbl&gt; | TotalCharges &lt;dbl&gt; | Churn &lt;int&gt; |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| CUST0000 | 1 | 0 | 0 | 1 | 23 | 0 | 0 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 1 | 1 | 3 |  49.85 | 1146.55 | 0 |\n| CUST0001 | 0 | 0 | 1 | 0 | 43 | 0 | 0 | 2 | 2 | ⋯ | 2 | 1 | 2 | 1 | 1 | 0 | 2 | 100.70 | 4330.10 | 1 |\n| CUST0002 | 1 | 1 | 0 | 0 | 51 | 1 | 1 | 2 | 1 | ⋯ | 2 | 2 | 1 | 1 | 2 | 0 | 1 |  97.33 | 4963.83 | 1 |\n| CUST0003 | 1 | 1 | 0 | 0 | 72 | 1 | 2 | 2 | 2 | ⋯ | 2 | 1 | 1 | 1 | 1 | 0 | 4 | 101.38 | 7299.36 | 0 |\n| CUST0004 | 1 | 1 | 0 | 0 | 25 | 1 | 2 | 2 | 1 | ⋯ | 1 | 2 | 1 | 2 | 1 | 0 | 1 |  52.22 | 1305.50 | 1 |\n| CUST0005 | 0 | 0 | 1 | 0 | 35 | 1 | 1 | 2 | 1 | ⋯ | 1 | 2 | 2 | 2 | 2 | 0 | 4 | 116.96 | 4093.60 | 0 |\n| CUST0006 | 1 | 0 | 1 | 0 | 17 | 0 | 0 | 2 | 1 | ⋯ | 1 | 2 | 1 | 2 | 2 | 1 | 3 |  91.53 | 1556.01 | 1 |\n| CUST0007 | 1 | 0 | 1 | 1 | 18 | 1 | 1 | 2 | 1 | ⋯ | 2 | 2 | 1 | 2 | 2 | 0 | 2 |  26.52 |  477.36 | 1 |\n| CUST0008 | 1 | 0 | 0 | 0 | 27 | 0 | 0 | 2 | 2 | ⋯ | 1 | 2 | 1 | 1 | 2 | 0 | 2 |  67.77 | 1829.79 | 1 |\n| CUST0009 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 2 | 0 | 1 |  86.45 | 1296.75 | 1 |\n| CUST0010 | 1 | 1 | 1 | 0 | 69 | 1 | 2 | 1 | 2 | ⋯ | 2 | 2 | 1 | 2 | 1 | 0 | 1 |  36.87 | 2544.03 | 1 |\n| CUST0011 | 1 | 0 | 1 | 0 | 15 | 1 | 1 | 2 | 1 | ⋯ | 2 | 2 | 2 | 2 | 3 | 1 | 3 | 110.18 | 1652.70 | 0 |\n| CUST0012 | 1 | 0 | 0 | 1 | 42 | 1 | 2 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 2 | 0 | 2 |  95.41 | 4007.22 | 0 |\n| CUST0013 | 1 | 0 | 0 | 0 | 34 | 1 | 2 | 2 | 1 | ⋯ | 1 | 1 | 1 | 2 | 3 | 1 | 4 |  28.14 |  956.76 | 0 |\n| CUST0014 | 0 | 0 | 1 | 1 | 48 | 1 | 2 | 2 | 1 | ⋯ | 1 | 1 | 2 | 1 | 1 | 1 | 3 | 111.32 | 5343.36 | 1 |\n| CUST0015 | 1 | 0 | 0 | 1 |  8 | 0 | 0 | 1 | 1 | ⋯ | 2 | 1 | 2 | 2 | 2 | 1 | 3 |  60.44 |  483.52 | 1 |\n| CUST0016 | 0 | 1 | 0 | 0 | 10 | 1 | 1 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 3 | 0 | 3 |  65.25 |  652.50 | 0 |\n| CUST0017 | 0 | 0 | 0 | 0 |  5 | 0 | 0 | 2 | 1 | ⋯ | 2 | 1 | 2 | 2 | 3 | 1 | 2 |  98.31 |  491.55 | 0 |\n| CUST0018 | 0 | 0 | 0 | 1 | 48 | 1 | 1 | 1 | 1 | ⋯ | 1 | 2 | 2 | 2 | 3 | 1 | 1 |  84.40 | 4051.20 | 1 |\n| CUST0019 | 1 | 0 | 0 | 1 | 26 | 0 | 0 | 1 | 1 | ⋯ | 1 | 2 | 1 | 2 | 3 | 0 | 2 |  63.75 | 1657.50 | 1 |\n| CUST0020 | 0 | 1 | 0 | 0 | 23 | 0 | 0 | 2 | 1 | ⋯ | 2 | 2 | 2 | 2 | 3 | 1 | 4 |  45.96 | 1057.08 | 0 |\n| CUST0021 | 1 | 1 | 0 | 1 | 62 | 0 | 0 | 2 | 2 | ⋯ | 1 | 1 | 2 | 2 | 2 | 0 | 2 |  71.69 | 4444.78 | 0 |\n| CUST0022 | 0 | 1 | 1 | 0 | 13 | 1 | 2 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 2 | 1 | 4 |  77.92 | 1012.96 | 1 |\n| CUST0023 | 0 | 0 | 1 | 0 |  9 | 1 | 1 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 2 | 1 | 4 |  83.09 |  747.81 | 1 |\n| CUST0024 | 0 | 1 | 0 | 1 | 20 | 1 | 2 | 2 | 2 | ⋯ | 1 | 2 | 1 | 2 | 3 | 0 | 4 |  80.51 | 1610.20 | 1 |\n| CUST0025 | 0 | 0 | 0 | 0 | 57 | 0 | 0 | 2 | 1 | ⋯ | 1 | 1 | 1 | 1 | 3 | 0 | 2 |  81.73 | 4658.61 | 1 |\n| CUST0026 | 0 | 0 | 0 | 0 | 24 | 0 | 0 | 1 | 1 | ⋯ | 1 | 1 | 2 | 2 | 1 | 0 | 4 |  67.57 | 1621.68 | 0 |\n| CUST0027 | 0 | 1 | 1 | 0 | 33 | 1 | 1 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 3 | 0 | 4 |  76.19 | 2514.27 | 0 |\n| CUST0028 | 0 | 0 | 1 | 1 | 20 | 1 | 2 | 2 | 2 | ⋯ | 2 | 1 | 1 | 2 | 1 | 1 | 3 |  48.86 |  977.20 | 1 |\n| CUST0029 | 0 | 0 | 0 | 1 | 60 | 0 | 0 | 2 | 1 | ⋯ | 1 | 1 | 2 | 1 | 1 | 1 | 3 |  35.84 | 2150.40 | 1 |\n| ⋮ | ⋮ | ⋮ | ⋮ | ⋮ | ⋮ | ⋮ | ⋮ | ⋮ | ⋮ | ⋱ | ⋮ | ⋮ | ⋮ | ⋮ | ⋮ | ⋮ | ⋮ | ⋮ | ⋮ | ⋮ |\n| CUST5850 | 1 | 0 | 0 | 1 | 71 | 0 | 0 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 3 | 0 | 4 |  42.71 | 3032.41 | 1 |\n| CUST5851 | 1 | 0 | 0 | 1 | 61 | 1 | 1 | 1 | 1 | ⋯ | 2 | 1 | 1 | 2 | 2 | 0 | 2 |  32.87 | 2005.07 | 0 |\n| CUST5852 | 0 | 0 | 0 | 0 | 36 | 0 | 0 | 1 | 2 | ⋯ | 2 | 1 | 2 | 2 | 1 | 1 | 3 |  51.55 | 1855.80 | 0 |\n| CUST5853 | 0 | 0 | 0 | 1 | 24 | 0 | 0 | 2 | 2 | ⋯ | 2 | 2 | 2 | 1 | 1 | 1 | 1 |  66.71 | 1601.04 | 0 |\n| CUST5854 | 1 | 0 | 1 | 0 | 32 | 1 | 2 | 1 | 1 | ⋯ | 2 | 1 | 2 | 2 | 1 | 1 | 4 |  50.10 | 1603.20 | 0 |\n| CUST5855 | 0 | 1 | 1 | 1 | 59 | 1 | 1 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 3 | 0 | 1 | 117.05 | 6905.95 | 0 |\n| CUST5856 | 0 | 0 | 0 | 0 |  5 | 1 | 2 | 1 | 1 | ⋯ | 2 | 2 | 2 | 1 | 3 | 0 | 2 |  97.92 |  489.60 | 0 |\n| CUST5857 | 0 | 0 | 0 | 1 | 16 | 1 | 2 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 3 | 0 | 1 | 116.61 | 1865.76 | 1 |\n| CUST5858 | 1 | 1 | 0 | 0 | 11 | 1 | 2 | 2 | 2 | ⋯ | 2 | 1 | 2 | 2 | 1 | 0 | 2 |  57.32 |  630.52 | 0 |\n| CUST5859 | 0 | 1 | 0 | 1 | 35 | 0 | 0 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 2 | 0 | 2 |  50.47 | 1766.45 | 1 |\n| CUST5860 | 1 | 1 | 1 | 0 | 42 | 0 | 0 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 3 | 0 | 4 |  60.74 | 2551.08 | 0 |\n| CUST5861 | 0 | 1 | 1 | 0 | 10 | 1 | 2 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 1 | 1 | 3 |  72.28 |  722.80 | 1 |\n| CUST5862 | 1 | 0 | 0 | 1 |  8 | 1 | 2 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 3 | 1 | 1 |  94.16 |  753.28 | 1 |\n| CUST5863 | 0 | 1 | 1 | 0 | 26 | 1 | 2 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 108.11 | 2810.86 | 1 |\n| CUST5864 | 1 | 1 | 1 | 0 |  3 | 0 | 0 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 1 | 0 | 2 |  66.32 |  198.96 | 0 |\n| CUST5865 | 1 | 0 | 0 | 1 | 59 | 0 | 0 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 3 | 1 | 3 |  48.92 | 2886.28 | 1 |\n| CUST5866 | 1 | 0 | 0 | 1 |  3 | 0 | 0 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 1 | 0 | 2 |  51.88 |  155.64 | 1 |\n| CUST5867 | 0 | 0 | 0 | 1 | 38 | 0 | 0 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 3 | 1 | 4 |  89.69 | 3408.22 | 1 |\n| CUST5868 | 0 | 1 | 1 | 1 |  2 | 1 | 1 | 2 | 2 | ⋯ | 2 | 2 | 1 | 2 | 1 | 0 | 4 |  76.76 |  153.52 | 1 |\n| CUST5869 | 0 | 0 | 1 | 1 | 17 | 0 | 0 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 2 | 0 | 3 |  68.65 | 1167.05 | 0 |\n| CUST5870 | 1 | 1 | 0 | 1 | 36 | 0 | 0 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 2 | 0 | 1 |  40.28 | 1450.08 | 1 |\n| CUST5871 | 0 | 0 | 0 | 0 |  2 | 1 | 2 | 1 | 2 | ⋯ | 1 | 2 | 1 | 2 | 2 | 0 | 3 | 107.55 |  215.10 | 1 |\n| CUST5872 | 1 | 0 | 1 | 0 | 34 | 1 | 2 | 1 | 2 | ⋯ | 2 | 1 | 1 | 2 | 2 | 1 | 1 |  98.10 | 3335.40 | 1 |\n| CUST5873 | 0 | 1 | 1 | 0 | 27 | 0 | 0 | 1 | 1 | ⋯ | 1 | 2 | 1 | 2 | 3 | 1 | 1 |  34.06 |  919.62 | 1 |\n| CUST5874 | 1 | 0 | 0 | 1 | 37 | 1 | 1 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 1 | 0 | 1 |  56.74 | 2099.38 | 1 |\n| CUST5875 | 1 | 0 | 1 | 1 | 71 | 1 | 1 | 2 | 2 | ⋯ | 1 | 2 | 1 | 1 | 1 | 1 | 2 |  74.21 | 5268.91 | 0 |\n| CUST5876 | 1 | 0 | 0 | 0 | 22 | 1 | 2 | 2 | 1 | ⋯ | 2 | 2 | 1 | 2 | 2 | 0 | 2 |  65.43 | 1439.46 | 1 |\n| CUST5877 | 0 | 0 | 0 | 0 | 68 | 0 | 0 | 1 | 2 | ⋯ | 2 | 2 | 2 | 1 | 2 | 1 | 3 |  59.78 | 4065.04 | 0 |\n| CUST5878 | 0 | 0 | 1 | 1 | 14 | 0 | 0 | 1 | 2 | ⋯ | 2 | 2 | 2 | 2 | 1 | 1 | 2 |  91.88 | 1286.32 | 0 |\n| CUST5879 | 0 | 1 | 1 | 0 | 23 | 1 | 1 | 0 | 0 | ⋯ | 0 | 0 | 0 | 0 | 1 | 0 | 2 |  25.45 |  585.35 | 1 |\n\n",
+            "text/latex": "A data.frame: 5880 × 21\n\\begin{tabular}{lllllllllllllllllllll}\n customerID & gender & SeniorCitizen & Partner & Dependents & tenure & PhoneService & MultipleLines & InternetService & OnlineSecurity & ⋯ & DeviceProtection & TechSupport & StreamingTV & StreamingMovies & Contract & PaperlessBilling & PaymentMethod & MonthlyCharges & TotalCharges & Churn\\\\\n <chr> & <int> & <int> & <int> & <int> & <int> & <int> & <int> & <int> & <int> & ⋯ & <int> & <int> & <int> & <int> & <int> & <int> & <int> & <dbl> & <dbl> & <int>\\\\\n\\hline\n\t CUST0000 & 1 & 0 & 0 & 1 & 23 & 0 & 0 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 1 & 1 & 3 &  49.85 & 1146.55 & 0\\\\\n\t CUST0001 & 0 & 0 & 1 & 0 & 43 & 0 & 0 & 2 & 2 & ⋯ & 2 & 1 & 2 & 1 & 1 & 0 & 2 & 100.70 & 4330.10 & 1\\\\\n\t CUST0002 & 1 & 1 & 0 & 0 & 51 & 1 & 1 & 2 & 1 & ⋯ & 2 & 2 & 1 & 1 & 2 & 0 & 1 &  97.33 & 4963.83 & 1\\\\\n\t CUST0003 & 1 & 1 & 0 & 0 & 72 & 1 & 2 & 2 & 2 & ⋯ & 2 & 1 & 1 & 1 & 1 & 0 & 4 & 101.38 & 7299.36 & 0\\\\\n\t CUST0004 & 1 & 1 & 0 & 0 & 25 & 1 & 2 & 2 & 1 & ⋯ & 1 & 2 & 1 & 2 & 1 & 0 & 1 &  52.22 & 1305.50 & 1\\\\\n\t CUST0005 & 0 & 0 & 1 & 0 & 35 & 1 & 1 & 2 & 1 & ⋯ & 1 & 2 & 2 & 2 & 2 & 0 & 4 & 116.96 & 4093.60 & 0\\\\\n\t CUST0006 & 1 & 0 & 1 & 0 & 17 & 0 & 0 & 2 & 1 & ⋯ & 1 & 2 & 1 & 2 & 2 & 1 & 3 &  91.53 & 1556.01 & 1\\\\\n\t CUST0007 & 1 & 0 & 1 & 1 & 18 & 1 & 1 & 2 & 1 & ⋯ & 2 & 2 & 1 & 2 & 2 & 0 & 2 &  26.52 &  477.36 & 1\\\\\n\t CUST0008 & 1 & 0 & 0 & 0 & 27 & 0 & 0 & 2 & 2 & ⋯ & 1 & 2 & 1 & 1 & 2 & 0 & 2 &  67.77 & 1829.79 & 1\\\\\n\t CUST0009 & 0 & 0 & 0 & 0 & 15 & 0 & 0 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 2 & 0 & 1 &  86.45 & 1296.75 & 1\\\\\n\t CUST0010 & 1 & 1 & 1 & 0 & 69 & 1 & 2 & 1 & 2 & ⋯ & 2 & 2 & 1 & 2 & 1 & 0 & 1 &  36.87 & 2544.03 & 1\\\\\n\t CUST0011 & 1 & 0 & 1 & 0 & 15 & 1 & 1 & 2 & 1 & ⋯ & 2 & 2 & 2 & 2 & 3 & 1 & 3 & 110.18 & 1652.70 & 0\\\\\n\t CUST0012 & 1 & 0 & 0 & 1 & 42 & 1 & 2 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 2 & 0 & 2 &  95.41 & 4007.22 & 0\\\\\n\t CUST0013 & 1 & 0 & 0 & 0 & 34 & 1 & 2 & 2 & 1 & ⋯ & 1 & 1 & 1 & 2 & 3 & 1 & 4 &  28.14 &  956.76 & 0\\\\\n\t CUST0014 & 0 & 0 & 1 & 1 & 48 & 1 & 2 & 2 & 1 & ⋯ & 1 & 1 & 2 & 1 & 1 & 1 & 3 & 111.32 & 5343.36 & 1\\\\\n\t CUST0015 & 1 & 0 & 0 & 1 &  8 & 0 & 0 & 1 & 1 & ⋯ & 2 & 1 & 2 & 2 & 2 & 1 & 3 &  60.44 &  483.52 & 1\\\\\n\t CUST0016 & 0 & 1 & 0 & 0 & 10 & 1 & 1 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 3 & 0 & 3 &  65.25 &  652.50 & 0\\\\\n\t CUST0017 & 0 & 0 & 0 & 0 &  5 & 0 & 0 & 2 & 1 & ⋯ & 2 & 1 & 2 & 2 & 3 & 1 & 2 &  98.31 &  491.55 & 0\\\\\n\t CUST0018 & 0 & 0 & 0 & 1 & 48 & 1 & 1 & 1 & 1 & ⋯ & 1 & 2 & 2 & 2 & 3 & 1 & 1 &  84.40 & 4051.20 & 1\\\\\n\t CUST0019 & 1 & 0 & 0 & 1 & 26 & 0 & 0 & 1 & 1 & ⋯ & 1 & 2 & 1 & 2 & 3 & 0 & 2 &  63.75 & 1657.50 & 1\\\\\n\t CUST0020 & 0 & 1 & 0 & 0 & 23 & 0 & 0 & 2 & 1 & ⋯ & 2 & 2 & 2 & 2 & 3 & 1 & 4 &  45.96 & 1057.08 & 0\\\\\n\t CUST0021 & 1 & 1 & 0 & 1 & 62 & 0 & 0 & 2 & 2 & ⋯ & 1 & 1 & 2 & 2 & 2 & 0 & 2 &  71.69 & 4444.78 & 0\\\\\n\t CUST0022 & 0 & 1 & 1 & 0 & 13 & 1 & 2 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 2 & 1 & 4 &  77.92 & 1012.96 & 1\\\\\n\t CUST0023 & 0 & 0 & 1 & 0 &  9 & 1 & 1 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 2 & 1 & 4 &  83.09 &  747.81 & 1\\\\\n\t CUST0024 & 0 & 1 & 0 & 1 & 20 & 1 & 2 & 2 & 2 & ⋯ & 1 & 2 & 1 & 2 & 3 & 0 & 4 &  80.51 & 1610.20 & 1\\\\\n\t CUST0025 & 0 & 0 & 0 & 0 & 57 & 0 & 0 & 2 & 1 & ⋯ & 1 & 1 & 1 & 1 & 3 & 0 & 2 &  81.73 & 4658.61 & 1\\\\\n\t CUST0026 & 0 & 0 & 0 & 0 & 24 & 0 & 0 & 1 & 1 & ⋯ & 1 & 1 & 2 & 2 & 1 & 0 & 4 &  67.57 & 1621.68 & 0\\\\\n\t CUST0027 & 0 & 1 & 1 & 0 & 33 & 1 & 1 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 3 & 0 & 4 &  76.19 & 2514.27 & 0\\\\\n\t CUST0028 & 0 & 0 & 1 & 1 & 20 & 1 & 2 & 2 & 2 & ⋯ & 2 & 1 & 1 & 2 & 1 & 1 & 3 &  48.86 &  977.20 & 1\\\\\n\t CUST0029 & 0 & 0 & 0 & 1 & 60 & 0 & 0 & 2 & 1 & ⋯ & 1 & 1 & 2 & 1 & 1 & 1 & 3 &  35.84 & 2150.40 & 1\\\\\n\t ⋮ & ⋮ & ⋮ & ⋮ & ⋮ & ⋮ & ⋮ & ⋮ & ⋮ & ⋮ & ⋱ & ⋮ & ⋮ & ⋮ & ⋮ & ⋮ & ⋮ & ⋮ & ⋮ & ⋮ & ⋮\\\\\n\t CUST5850 & 1 & 0 & 0 & 1 & 71 & 0 & 0 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 3 & 0 & 4 &  42.71 & 3032.41 & 1\\\\\n\t CUST5851 & 1 & 0 & 0 & 1 & 61 & 1 & 1 & 1 & 1 & ⋯ & 2 & 1 & 1 & 2 & 2 & 0 & 2 &  32.87 & 2005.07 & 0\\\\\n\t CUST5852 & 0 & 0 & 0 & 0 & 36 & 0 & 0 & 1 & 2 & ⋯ & 2 & 1 & 2 & 2 & 1 & 1 & 3 &  51.55 & 1855.80 & 0\\\\\n\t CUST5853 & 0 & 0 & 0 & 1 & 24 & 0 & 0 & 2 & 2 & ⋯ & 2 & 2 & 2 & 1 & 1 & 1 & 1 &  66.71 & 1601.04 & 0\\\\\n\t CUST5854 & 1 & 0 & 1 & 0 & 32 & 1 & 2 & 1 & 1 & ⋯ & 2 & 1 & 2 & 2 & 1 & 1 & 4 &  50.10 & 1603.20 & 0\\\\\n\t CUST5855 & 0 & 1 & 1 & 1 & 59 & 1 & 1 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 3 & 0 & 1 & 117.05 & 6905.95 & 0\\\\\n\t CUST5856 & 0 & 0 & 0 & 0 &  5 & 1 & 2 & 1 & 1 & ⋯ & 2 & 2 & 2 & 1 & 3 & 0 & 2 &  97.92 &  489.60 & 0\\\\\n\t CUST5857 & 0 & 0 & 0 & 1 & 16 & 1 & 2 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 3 & 0 & 1 & 116.61 & 1865.76 & 1\\\\\n\t CUST5858 & 1 & 1 & 0 & 0 & 11 & 1 & 2 & 2 & 2 & ⋯ & 2 & 1 & 2 & 2 & 1 & 0 & 2 &  57.32 &  630.52 & 0\\\\\n\t CUST5859 & 0 & 1 & 0 & 1 & 35 & 0 & 0 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 2 & 0 & 2 &  50.47 & 1766.45 & 1\\\\\n\t CUST5860 & 1 & 1 & 1 & 0 & 42 & 0 & 0 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 3 & 0 & 4 &  60.74 & 2551.08 & 0\\\\\n\t CUST5861 & 0 & 1 & 1 & 0 & 10 & 1 & 2 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 1 & 1 & 3 &  72.28 &  722.80 & 1\\\\\n\t CUST5862 & 1 & 0 & 0 & 1 &  8 & 1 & 2 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 3 & 1 & 1 &  94.16 &  753.28 & 1\\\\\n\t CUST5863 & 0 & 1 & 1 & 0 & 26 & 1 & 2 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 1 & 0 & 1 & 108.11 & 2810.86 & 1\\\\\n\t CUST5864 & 1 & 1 & 1 & 0 &  3 & 0 & 0 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 1 & 0 & 2 &  66.32 &  198.96 & 0\\\\\n\t CUST5865 & 1 & 0 & 0 & 1 & 59 & 0 & 0 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 3 & 1 & 3 &  48.92 & 2886.28 & 1\\\\\n\t CUST5866 & 1 & 0 & 0 & 1 &  3 & 0 & 0 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 1 & 0 & 2 &  51.88 &  155.64 & 1\\\\\n\t CUST5867 & 0 & 0 & 0 & 1 & 38 & 0 & 0 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 3 & 1 & 4 &  89.69 & 3408.22 & 1\\\\\n\t CUST5868 & 0 & 1 & 1 & 1 &  2 & 1 & 1 & 2 & 2 & ⋯ & 2 & 2 & 1 & 2 & 1 & 0 & 4 &  76.76 &  153.52 & 1\\\\\n\t CUST5869 & 0 & 0 & 1 & 1 & 17 & 0 & 0 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 2 & 0 & 3 &  68.65 & 1167.05 & 0\\\\\n\t CUST5870 & 1 & 1 & 0 & 1 & 36 & 0 & 0 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 2 & 0 & 1 &  40.28 & 1450.08 & 1\\\\\n\t CUST5871 & 0 & 0 & 0 & 0 &  2 & 1 & 2 & 1 & 2 & ⋯ & 1 & 2 & 1 & 2 & 2 & 0 & 3 & 107.55 &  215.10 & 1\\\\\n\t CUST5872 & 1 & 0 & 1 & 0 & 34 & 1 & 2 & 1 & 2 & ⋯ & 2 & 1 & 1 & 2 & 2 & 1 & 1 &  98.10 & 3335.40 & 1\\\\\n\t CUST5873 & 0 & 1 & 1 & 0 & 27 & 0 & 0 & 1 & 1 & ⋯ & 1 & 2 & 1 & 2 & 3 & 1 & 1 &  34.06 &  919.62 & 1\\\\\n\t CUST5874 & 1 & 0 & 0 & 1 & 37 & 1 & 1 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 1 & 0 & 1 &  56.74 & 2099.38 & 1\\\\\n\t CUST5875 & 1 & 0 & 1 & 1 & 71 & 1 & 1 & 2 & 2 & ⋯ & 1 & 2 & 1 & 1 & 1 & 1 & 2 &  74.21 & 5268.91 & 0\\\\\n\t CUST5876 & 1 & 0 & 0 & 0 & 22 & 1 & 2 & 2 & 1 & ⋯ & 2 & 2 & 1 & 2 & 2 & 0 & 2 &  65.43 & 1439.46 & 1\\\\\n\t CUST5877 & 0 & 0 & 0 & 0 & 68 & 0 & 0 & 1 & 2 & ⋯ & 2 & 2 & 2 & 1 & 2 & 1 & 3 &  59.78 & 4065.04 & 0\\\\\n\t CUST5878 & 0 & 0 & 1 & 1 & 14 & 0 & 0 & 1 & 2 & ⋯ & 2 & 2 & 2 & 2 & 1 & 1 & 2 &  91.88 & 1286.32 & 0\\\\\n\t CUST5879 & 0 & 1 & 1 & 0 & 23 & 1 & 1 & 0 & 0 & ⋯ & 0 & 0 & 0 & 0 & 1 & 0 & 2 &  25.45 &  585.35 & 1\\\\\n\\end{tabular}\n",
+            "text/plain": [
+              "     customerID gender SeniorCitizen Partner Dependents tenure PhoneService\n",
+              "1    CUST0000   1      0             0       1          23     0           \n",
+              "2    CUST0001   0      0             1       0          43     0           \n",
+              "3    CUST0002   1      1             0       0          51     1           \n",
+              "4    CUST0003   1      1             0       0          72     1           \n",
+              "5    CUST0004   1      1             0       0          25     1           \n",
+              "6    CUST0005   0      0             1       0          35     1           \n",
+              "7    CUST0006   1      0             1       0          17     0           \n",
+              "8    CUST0007   1      0             1       1          18     1           \n",
+              "9    CUST0008   1      0             0       0          27     0           \n",
+              "10   CUST0009   0      0             0       0          15     0           \n",
+              "11   CUST0010   1      1             1       0          69     1           \n",
+              "12   CUST0011   1      0             1       0          15     1           \n",
+              "13   CUST0012   1      0             0       1          42     1           \n",
+              "14   CUST0013   1      0             0       0          34     1           \n",
+              "15   CUST0014   0      0             1       1          48     1           \n",
+              "16   CUST0015   1      0             0       1           8     0           \n",
+              "17   CUST0016   0      1             0       0          10     1           \n",
+              "18   CUST0017   0      0             0       0           5     0           \n",
+              "19   CUST0018   0      0             0       1          48     1           \n",
+              "20   CUST0019   1      0             0       1          26     0           \n",
+              "21   CUST0020   0      1             0       0          23     0           \n",
+              "22   CUST0021   1      1             0       1          62     0           \n",
+              "23   CUST0022   0      1             1       0          13     1           \n",
+              "24   CUST0023   0      0             1       0           9     1           \n",
+              "25   CUST0024   0      1             0       1          20     1           \n",
+              "26   CUST0025   0      0             0       0          57     0           \n",
+              "27   CUST0026   0      0             0       0          24     0           \n",
+              "28   CUST0027   0      1             1       0          33     1           \n",
+              "29   CUST0028   0      0             1       1          20     1           \n",
+              "30   CUST0029   0      0             0       1          60     0           \n",
+              "⋮    ⋮          ⋮      ⋮             ⋮       ⋮          ⋮      ⋮           \n",
+              "5851 CUST5850   1      0             0       1          71     0           \n",
+              "5852 CUST5851   1      0             0       1          61     1           \n",
+              "5853 CUST5852   0      0             0       0          36     0           \n",
+              "5854 CUST5853   0      0             0       1          24     0           \n",
+              "5855 CUST5854   1      0             1       0          32     1           \n",
+              "5856 CUST5855   0      1             1       1          59     1           \n",
+              "5857 CUST5856   0      0             0       0           5     1           \n",
+              "5858 CUST5857   0      0             0       1          16     1           \n",
+              "5859 CUST5858   1      1             0       0          11     1           \n",
+              "5860 CUST5859   0      1             0       1          35     0           \n",
+              "5861 CUST5860   1      1             1       0          42     0           \n",
+              "5862 CUST5861   0      1             1       0          10     1           \n",
+              "5863 CUST5862   1      0             0       1           8     1           \n",
+              "5864 CUST5863   0      1             1       0          26     1           \n",
+              "5865 CUST5864   1      1             1       0           3     0           \n",
+              "5866 CUST5865   1      0             0       1          59     0           \n",
+              "5867 CUST5866   1      0             0       1           3     0           \n",
+              "5868 CUST5867   0      0             0       1          38     0           \n",
+              "5869 CUST5868   0      1             1       1           2     1           \n",
+              "5870 CUST5869   0      0             1       1          17     0           \n",
+              "5871 CUST5870   1      1             0       1          36     0           \n",
+              "5872 CUST5871   0      0             0       0           2     1           \n",
+              "5873 CUST5872   1      0             1       0          34     1           \n",
+              "5874 CUST5873   0      1             1       0          27     0           \n",
+              "5875 CUST5874   1      0             0       1          37     1           \n",
+              "5876 CUST5875   1      0             1       1          71     1           \n",
+              "5877 CUST5876   1      0             0       0          22     1           \n",
+              "5878 CUST5877   0      0             0       0          68     0           \n",
+              "5879 CUST5878   0      0             1       1          14     0           \n",
+              "5880 CUST5879   0      1             1       0          23     1           \n",
+              "     MultipleLines InternetService OnlineSecurity ⋯ DeviceProtection\n",
+              "1    0             0               0              ⋯ 0               \n",
+              "2    0             2               2              ⋯ 2               \n",
+              "3    1             2               1              ⋯ 2               \n",
+              "4    2             2               2              ⋯ 2               \n",
+              "5    2             2               1              ⋯ 1               \n",
+              "6    1             2               1              ⋯ 1               \n",
+              "7    0             2               1              ⋯ 1               \n",
+              "8    1             2               1              ⋯ 2               \n",
+              "9    0             2               2              ⋯ 1               \n",
+              "10   0             0               0              ⋯ 0               \n",
+              "11   2             1               2              ⋯ 2               \n",
+              "12   1             2               1              ⋯ 2               \n",
+              "13   2             0               0              ⋯ 0               \n",
+              "14   2             2               1              ⋯ 1               \n",
+              "15   2             2               1              ⋯ 1               \n",
+              "16   0             1               1              ⋯ 2               \n",
+              "17   1             0               0              ⋯ 0               \n",
+              "18   0             2               1              ⋯ 2               \n",
+              "19   1             1               1              ⋯ 1               \n",
+              "20   0             1               1              ⋯ 1               \n",
+              "21   0             2               1              ⋯ 2               \n",
+              "22   0             2               2              ⋯ 1               \n",
+              "23   2             0               0              ⋯ 0               \n",
+              "24   1             0               0              ⋯ 0               \n",
+              "25   2             2               2              ⋯ 1               \n",
+              "26   0             2               1              ⋯ 1               \n",
+              "27   0             1               1              ⋯ 1               \n",
+              "28   1             0               0              ⋯ 0               \n",
+              "29   2             2               2              ⋯ 2               \n",
+              "30   0             2               1              ⋯ 1               \n",
+              "⋮    ⋮             ⋮               ⋮              ⋱ ⋮               \n",
+              "5851 0             0               0              ⋯ 0               \n",
+              "5852 1             1               1              ⋯ 2               \n",
+              "5853 0             1               2              ⋯ 2               \n",
+              "5854 0             2               2              ⋯ 2               \n",
+              "5855 2             1               1              ⋯ 2               \n",
+              "5856 1             0               0              ⋯ 0               \n",
+              "5857 2             1               1              ⋯ 2               \n",
+              "5858 2             0               0              ⋯ 0               \n",
+              "5859 2             2               2              ⋯ 2               \n",
+              "5860 0             0               0              ⋯ 0               \n",
+              "5861 0             0               0              ⋯ 0               \n",
+              "5862 2             0               0              ⋯ 0               \n",
+              "5863 2             0               0              ⋯ 0               \n",
+              "5864 2             0               0              ⋯ 0               \n",
+              "5865 0             0               0              ⋯ 0               \n",
+              "5866 0             0               0              ⋯ 0               \n",
+              "5867 0             0               0              ⋯ 0               \n",
+              "5868 0             0               0              ⋯ 0               \n",
+              "5869 1             2               2              ⋯ 2               \n",
+              "5870 0             0               0              ⋯ 0               \n",
+              "5871 0             0               0              ⋯ 0               \n",
+              "5872 2             1               2              ⋯ 1               \n",
+              "5873 2             1               2              ⋯ 2               \n",
+              "5874 0             1               1              ⋯ 1               \n",
+              "5875 1             0               0              ⋯ 0               \n",
+              "5876 1             2               2              ⋯ 1               \n",
+              "5877 2             2               1              ⋯ 2               \n",
+              "5878 0             1               2              ⋯ 2               \n",
+              "5879 0             1               2              ⋯ 2               \n",
+              "5880 1             0               0              ⋯ 0               \n",
+              "     TechSupport StreamingTV StreamingMovies Contract PaperlessBilling\n",
+              "1    0           0           0               1        1               \n",
+              "2    1           2           1               1        0               \n",
+              "3    2           1           1               2        0               \n",
+              "4    1           1           1               1        0               \n",
+              "5    2           1           2               1        0               \n",
+              "6    2           2           2               2        0               \n",
+              "7    2           1           2               2        1               \n",
+              "8    2           1           2               2        0               \n",
+              "9    2           1           1               2        0               \n",
+              "10   0           0           0               2        0               \n",
+              "11   2           1           2               1        0               \n",
+              "12   2           2           2               3        1               \n",
+              "13   0           0           0               2        0               \n",
+              "14   1           1           2               3        1               \n",
+              "15   1           2           1               1        1               \n",
+              "16   1           2           2               2        1               \n",
+              "17   0           0           0               3        0               \n",
+              "18   1           2           2               3        1               \n",
+              "19   2           2           2               3        1               \n",
+              "20   2           1           2               3        0               \n",
+              "21   2           2           2               3        1               \n",
+              "22   1           2           2               2        0               \n",
+              "23   0           0           0               2        1               \n",
+              "24   0           0           0               2        1               \n",
+              "25   2           1           2               3        0               \n",
+              "26   1           1           1               3        0               \n",
+              "27   1           2           2               1        0               \n",
+              "28   0           0           0               3        0               \n",
+              "29   1           1           2               1        1               \n",
+              "30   1           2           1               1        1               \n",
+              "⋮    ⋮           ⋮           ⋮               ⋮        ⋮               \n",
+              "5851 0           0           0               3        0               \n",
+              "5852 1           1           2               2        0               \n",
+              "5853 1           2           2               1        1               \n",
+              "5854 2           2           1               1        1               \n",
+              "5855 1           2           2               1        1               \n",
+              "5856 0           0           0               3        0               \n",
+              "5857 2           2           1               3        0               \n",
+              "5858 0           0           0               3        0               \n",
+              "5859 1           2           2               1        0               \n",
+              "5860 0           0           0               2        0               \n",
+              "5861 0           0           0               3        0               \n",
+              "5862 0           0           0               1        1               \n",
+              "5863 0           0           0               3        1               \n",
+              "5864 0           0           0               1        0               \n",
+              "5865 0           0           0               1        0               \n",
+              "5866 0           0           0               3        1               \n",
+              "5867 0           0           0               1        0               \n",
+              "5868 0           0           0               3        1               \n",
+              "5869 2           1           2               1        0               \n",
+              "5870 0           0           0               2        0               \n",
+              "5871 0           0           0               2        0               \n",
+              "5872 2           1           2               2        0               \n",
+              "5873 1           1           2               2        1               \n",
+              "5874 2           1           2               3        1               \n",
+              "5875 0           0           0               1        0               \n",
+              "5876 2           1           1               1        1               \n",
+              "5877 2           1           2               2        0               \n",
+              "5878 2           2           1               2        1               \n",
+              "5879 2           2           2               1        1               \n",
+              "5880 0           0           0               1        0               \n",
+              "     PaymentMethod MonthlyCharges TotalCharges Churn\n",
+              "1    3              49.85         1146.55      0    \n",
+              "2    2             100.70         4330.10      1    \n",
+              "3    1              97.33         4963.83      1    \n",
+              "4    4             101.38         7299.36      0    \n",
+              "5    1              52.22         1305.50      1    \n",
+              "6    4             116.96         4093.60      0    \n",
+              "7    3              91.53         1556.01      1    \n",
+              "8    2              26.52          477.36      1    \n",
+              "9    2              67.77         1829.79      1    \n",
+              "10   1              86.45         1296.75      1    \n",
+              "11   1              36.87         2544.03      1    \n",
+              "12   3             110.18         1652.70      0    \n",
+              "13   2              95.41         4007.22      0    \n",
+              "14   4              28.14          956.76      0    \n",
+              "15   3             111.32         5343.36      1    \n",
+              "16   3              60.44          483.52      1    \n",
+              "17   3              65.25          652.50      0    \n",
+              "18   2              98.31          491.55      0    \n",
+              "19   1              84.40         4051.20      1    \n",
+              "20   2              63.75         1657.50      1    \n",
+              "21   4              45.96         1057.08      0    \n",
+              "22   2              71.69         4444.78      0    \n",
+              "23   4              77.92         1012.96      1    \n",
+              "24   4              83.09          747.81      1    \n",
+              "25   4              80.51         1610.20      1    \n",
+              "26   2              81.73         4658.61      1    \n",
+              "27   4              67.57         1621.68      0    \n",
+              "28   4              76.19         2514.27      0    \n",
+              "29   3              48.86          977.20      1    \n",
+              "30   3              35.84         2150.40      1    \n",
+              "⋮    ⋮             ⋮              ⋮            ⋮    \n",
+              "5851 4              42.71         3032.41      1    \n",
+              "5852 2              32.87         2005.07      0    \n",
+              "5853 3              51.55         1855.80      0    \n",
+              "5854 1              66.71         1601.04      0    \n",
+              "5855 4              50.10         1603.20      0    \n",
+              "5856 1             117.05         6905.95      0    \n",
+              "5857 2              97.92          489.60      0    \n",
+              "5858 1             116.61         1865.76      1    \n",
+              "5859 2              57.32          630.52      0    \n",
+              "5860 2              50.47         1766.45      1    \n",
+              "5861 4              60.74         2551.08      0    \n",
+              "5862 3              72.28          722.80      1    \n",
+              "5863 1              94.16          753.28      1    \n",
+              "5864 1             108.11         2810.86      1    \n",
+              "5865 2              66.32          198.96      0    \n",
+              "5866 3              48.92         2886.28      1    \n",
+              "5867 2              51.88          155.64      1    \n",
+              "5868 4              89.69         3408.22      1    \n",
+              "5869 4              76.76          153.52      1    \n",
+              "5870 3              68.65         1167.05      0    \n",
+              "5871 1              40.28         1450.08      1    \n",
+              "5872 3             107.55          215.10      1    \n",
+              "5873 1              98.10         3335.40      1    \n",
+              "5874 1              34.06          919.62      1    \n",
+              "5875 1              56.74         2099.38      1    \n",
+              "5876 2              74.21         5268.91      0    \n",
+              "5877 2              65.43         1439.46      1    \n",
+              "5878 3              59.78         4065.04      0    \n",
+              "5879 2              91.88         1286.32      0    \n",
+              "5880 2              25.45          585.35      1    "
+            ]
+          },
+          "metadata": {}
+        }
+      ],
+      "source": [
+        "# Contoh membaca file CSV dari Google Drive\n",
+        "churn <- read.csv(path, sep = \";\")\n",
+        "churn"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "colnames(churn)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 52
+        },
+        "id": "5qxPIoUSA_Af",
+        "outputId": "48143727-4917-4059-97d5-1b1bff3f1c98"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<style>\n",
+              ".list-inline {list-style: none; margin:0; padding: 0}\n",
+              ".list-inline>li {display: inline-block}\n",
+              ".list-inline>li:not(:last-child)::after {content: \"\\00b7\"; padding: 0 .5ex}\n",
+              "</style>\n",
+              "<ol class=list-inline><li>'customerID'</li><li>'gender'</li><li>'SeniorCitizen'</li><li>'Partner'</li><li>'Dependents'</li><li>'tenure'</li><li>'PhoneService'</li><li>'MultipleLines'</li><li>'InternetService'</li><li>'OnlineSecurity'</li><li>'OnlineBackup'</li><li>'DeviceProtection'</li><li>'TechSupport'</li><li>'StreamingTV'</li><li>'StreamingMovies'</li><li>'Contract'</li><li>'PaperlessBilling'</li><li>'PaymentMethod'</li><li>'MonthlyCharges'</li><li>'TotalCharges'</li><li>'Churn'</li></ol>\n"
+            ],
+            "text/markdown": "1. 'customerID'\n2. 'gender'\n3. 'SeniorCitizen'\n4. 'Partner'\n5. 'Dependents'\n6. 'tenure'\n7. 'PhoneService'\n8. 'MultipleLines'\n9. 'InternetService'\n10. 'OnlineSecurity'\n11. 'OnlineBackup'\n12. 'DeviceProtection'\n13. 'TechSupport'\n14. 'StreamingTV'\n15. 'StreamingMovies'\n16. 'Contract'\n17. 'PaperlessBilling'\n18. 'PaymentMethod'\n19. 'MonthlyCharges'\n20. 'TotalCharges'\n21. 'Churn'\n\n\n",
+            "text/latex": "\\begin{enumerate*}\n\\item 'customerID'\n\\item 'gender'\n\\item 'SeniorCitizen'\n\\item 'Partner'\n\\item 'Dependents'\n\\item 'tenure'\n\\item 'PhoneService'\n\\item 'MultipleLines'\n\\item 'InternetService'\n\\item 'OnlineSecurity'\n\\item 'OnlineBackup'\n\\item 'DeviceProtection'\n\\item 'TechSupport'\n\\item 'StreamingTV'\n\\item 'StreamingMovies'\n\\item 'Contract'\n\\item 'PaperlessBilling'\n\\item 'PaymentMethod'\n\\item 'MonthlyCharges'\n\\item 'TotalCharges'\n\\item 'Churn'\n\\end{enumerate*}\n",
+            "text/plain": [
+              " [1] \"customerID\"       \"gender\"           \"SeniorCitizen\"    \"Partner\"         \n",
+              " [5] \"Dependents\"       \"tenure\"           \"PhoneService\"     \"MultipleLines\"   \n",
+              " [9] \"InternetService\"  \"OnlineSecurity\"   \"OnlineBackup\"     \"DeviceProtection\"\n",
+              "[13] \"TechSupport\"      \"StreamingTV\"      \"StreamingMovies\"  \"Contract\"        \n",
+              "[17] \"PaperlessBilling\" \"PaymentMethod\"    \"MonthlyCharges\"   \"TotalCharges\"    \n",
+              "[21] \"Churn\"           "
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# regresi logistik biner multiple\n",
+        "binom.multi<-glm(Churn ~ gender + SeniorCitizen +Partner+Dependents+tenure+PhoneService\n",
+        "                 +MultipleLines+InternetService+OnlineSecurity+OnlineBackup+DeviceProtection\n",
+        "                 +TechSupport+StreamingTV+StreamingMovies+Contract+ PaperlessBilling+PaymentMethod\n",
+        "                 +MonthlyCharges+TotalCharges,\n",
+        "                 family = binomial(link=\"logit\"),data = churn)\n",
+        "summary(binom.multi)"
+      ],
+      "metadata": {
+        "id": "vtH3s3a0-ssy",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 694
+        },
+        "outputId": "11199f9e-496d-42b1-f8b2-fb217a03a1ae"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "\n",
+              "Call:\n",
+              "glm(formula = Churn ~ gender + SeniorCitizen + Partner + Dependents + \n",
+              "    tenure + PhoneService + MultipleLines + InternetService + \n",
+              "    OnlineSecurity + OnlineBackup + DeviceProtection + TechSupport + \n",
+              "    StreamingTV + StreamingMovies + Contract + PaperlessBilling + \n",
+              "    PaymentMethod + MonthlyCharges + TotalCharges, family = binomial(link = \"logit\"), \n",
+              "    data = churn)\n",
+              "\n",
+              "Coefficients:\n",
+              "                   Estimate Std. Error z value Pr(>|z|)\n",
+              "(Intercept)      -2.085e-01  1.782e-01  -1.170    0.242\n",
+              "gender            3.153e-02  5.230e-02   0.603    0.547\n",
+              "SeniorCitizen    -2.152e-02  5.230e-02  -0.412    0.681\n",
+              "Partner           3.972e-02  5.228e-02   0.760    0.447\n",
+              "Dependents        1.396e-03  5.232e-02   0.027    0.979\n",
+              "tenure            1.135e-03  3.282e-03   0.346    0.729\n",
+              "PhoneService     -6.943e-02  1.236e-01  -0.562    0.574\n",
+              "MultipleLines    -2.213e-03  7.397e-02  -0.030    0.976\n",
+              "InternetService   3.613e-03  6.017e-02   0.060    0.952\n",
+              "OnlineSecurity   -1.788e-02  5.984e-02  -0.299    0.765\n",
+              "OnlineBackup      5.741e-02  5.994e-02   0.958    0.338\n",
+              "DeviceProtection  8.197e-02  5.968e-02   1.373    0.170\n",
+              "TechSupport      -7.433e-02  5.985e-02  -1.242    0.214\n",
+              "StreamingTV      -2.223e-02  6.023e-02  -0.369    0.712\n",
+              "StreamingMovies  -4.499e-02  5.980e-02  -0.752    0.452\n",
+              "Contract          4.199e-02  3.202e-02   1.311    0.190\n",
+              "PaperlessBilling -5.511e-04  5.232e-02  -0.011    0.992\n",
+              "PaymentMethod     2.481e-03  2.323e-02   0.107    0.915\n",
+              "MonthlyCharges    1.284e-03  1.829e-03   0.702    0.483\n",
+              "TotalCharges     -5.306e-06  4.325e-05  -0.123    0.902\n",
+              "\n",
+              "(Dispersion parameter for binomial family taken to be 1)\n",
+              "\n",
+              "    Null deviance: 8150.2  on 5879  degrees of freedom\n",
+              "Residual deviance: 8139.0  on 5860  degrees of freedom\n",
+              "AIC: 8179\n",
+              "\n",
+              "Number of Fisher Scoring iterations: 3\n"
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "##### uji simultan #####\n",
+        "# install.packages(\"lmtest\")\n",
+        "library(lmtest)\n",
+        "lrtest(binom.multi)"
+      ],
+      "metadata": {
+        "id": "31IDZKu5-yhA",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 161
+        },
+        "outputId": "5bc4ca73-26f9-4568-cf7d-bce5811cdb00"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<table class=\"dataframe\">\n",
+              "<caption>A anova: 2 × 5</caption>\n",
+              "<thead>\n",
+              "\t<tr><th></th><th scope=col>#Df</th><th scope=col>LogLik</th><th scope=col>Df</th><th scope=col>Chisq</th><th scope=col>Pr(&gt;Chisq)</th></tr>\n",
+              "\t<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>\n",
+              "</thead>\n",
+              "<tbody>\n",
+              "\t<tr><th scope=row>1</th><td>20</td><td>-4069.518</td><td> NA</td><td>      NA</td><td>       NA</td></tr>\n",
+              "\t<tr><th scope=row>2</th><td> 1</td><td>-4075.105</td><td>-19</td><td>11.17451</td><td>0.9178288</td></tr>\n",
+              "</tbody>\n",
+              "</table>\n"
+            ],
+            "text/markdown": "\nA anova: 2 × 5\n\n| <!--/--> | #Df &lt;dbl&gt; | LogLik &lt;dbl&gt; | Df &lt;dbl&gt; | Chisq &lt;dbl&gt; | Pr(&gt;Chisq) &lt;dbl&gt; |\n|---|---|---|---|---|---|\n| 1 | 20 | -4069.518 |  NA |       NA |        NA |\n| 2 |  1 | -4075.105 | -19 | 11.17451 | 0.9178288 |\n\n",
+            "text/latex": "A anova: 2 × 5\n\\begin{tabular}{r|lllll}\n  & \\#Df & LogLik & Df & Chisq & Pr(>Chisq)\\\\\n  & <dbl> & <dbl> & <dbl> & <dbl> & <dbl>\\\\\n\\hline\n\t1 & 20 & -4069.518 &  NA &       NA &        NA\\\\\n\t2 &  1 & -4075.105 & -19 & 11.17451 & 0.9178288\\\\\n\\end{tabular}\n",
+            "text/plain": [
+              "  #Df LogLik    Df  Chisq    Pr(>Chisq)\n",
+              "1 20  -4069.518  NA       NA        NA \n",
+              "2  1  -4075.105 -19 11.17451 0.9178288 "
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#####  uji parsial #####\n",
+        "# install.packages(\"car\")\n",
+        "library(car)\n",
+        "parsial = Anova(binom.multi,type=\"II\",test=\"Wald\")\n",
+        "parsial\n",
+        "results <- ifelse(parsial$`Pr(>Chisq)` < 0.05,\n",
+        "                  \"Tolak H0: P-value < 0,05\",\n",
+        "                  \"Terima H0: P-value > dari 0,05\")\n",
+        "print(results)"
+      ],
+      "metadata": {
+        "id": "YXFpnYKr-zxw",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 867
+        },
+        "outputId": "4a785138-fc18-43ab-88a2-705926c850e7"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<table class=\"dataframe\">\n",
+              "<caption>A anova: 19 × 3</caption>\n",
+              "<thead>\n",
+              "\t<tr><th></th><th scope=col>Df</th><th scope=col>Chisq</th><th scope=col>Pr(&gt;Chisq)</th></tr>\n",
+              "\t<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>\n",
+              "</thead>\n",
+              "<tbody>\n",
+              "\t<tr><th scope=row>gender</th><td>1</td><td>0.3634452084</td><td>0.5465991</td></tr>\n",
+              "\t<tr><th scope=row>SeniorCitizen</th><td>1</td><td>0.1693647497</td><td>0.6806770</td></tr>\n",
+              "\t<tr><th scope=row>Partner</th><td>1</td><td>0.5774589255</td><td>0.4473101</td></tr>\n",
+              "\t<tr><th scope=row>Dependents</th><td>1</td><td>0.0007120646</td><td>0.9787113</td></tr>\n",
+              "\t<tr><th scope=row>tenure</th><td>1</td><td>0.1196393789</td><td>0.7294259</td></tr>\n",
+              "\t<tr><th scope=row>PhoneService</th><td>1</td><td>0.3154652111</td><td>0.5743457</td></tr>\n",
+              "\t<tr><th scope=row>MultipleLines</th><td>1</td><td>0.0008952673</td><td>0.9761300</td></tr>\n",
+              "\t<tr><th scope=row>InternetService</th><td>1</td><td>0.0036062846</td><td>0.9521139</td></tr>\n",
+              "\t<tr><th scope=row>OnlineSecurity</th><td>1</td><td>0.0893032278</td><td>0.7650648</td></tr>\n",
+              "\t<tr><th scope=row>OnlineBackup</th><td>1</td><td>0.9174429325</td><td>0.3381473</td></tr>\n",
+              "\t<tr><th scope=row>DeviceProtection</th><td>1</td><td>1.8864414749</td><td>0.1696038</td></tr>\n",
+              "\t<tr><th scope=row>TechSupport</th><td>1</td><td>1.5427608422</td><td>0.2142073</td></tr>\n",
+              "\t<tr><th scope=row>StreamingTV</th><td>1</td><td>0.1362685505</td><td>0.7120191</td></tr>\n",
+              "\t<tr><th scope=row>StreamingMovies</th><td>1</td><td>0.5661415587</td><td>0.4517962</td></tr>\n",
+              "\t<tr><th scope=row>Contract</th><td>1</td><td>1.7199059558</td><td>0.1897052</td></tr>\n",
+              "\t<tr><th scope=row>PaperlessBilling</th><td>1</td><td>0.0001109168</td><td>0.9915971</td></tr>\n",
+              "\t<tr><th scope=row>PaymentMethod</th><td>1</td><td>0.0114068740</td><td>0.9149453</td></tr>\n",
+              "\t<tr><th scope=row>MonthlyCharges</th><td>1</td><td>0.4928515518</td><td>0.4826580</td></tr>\n",
+              "\t<tr><th scope=row>TotalCharges</th><td>1</td><td>0.0150540974</td><td>0.9023485</td></tr>\n",
+              "</tbody>\n",
+              "</table>\n"
+            ],
+            "text/markdown": "\nA anova: 19 × 3\n\n| <!--/--> | Df &lt;dbl&gt; | Chisq &lt;dbl&gt; | Pr(&gt;Chisq) &lt;dbl&gt; |\n|---|---|---|---|\n| gender | 1 | 0.3634452084 | 0.5465991 |\n| SeniorCitizen | 1 | 0.1693647497 | 0.6806770 |\n| Partner | 1 | 0.5774589255 | 0.4473101 |\n| Dependents | 1 | 0.0007120646 | 0.9787113 |\n| tenure | 1 | 0.1196393789 | 0.7294259 |\n| PhoneService | 1 | 0.3154652111 | 0.5743457 |\n| MultipleLines | 1 | 0.0008952673 | 0.9761300 |\n| InternetService | 1 | 0.0036062846 | 0.9521139 |\n| OnlineSecurity | 1 | 0.0893032278 | 0.7650648 |\n| OnlineBackup | 1 | 0.9174429325 | 0.3381473 |\n| DeviceProtection | 1 | 1.8864414749 | 0.1696038 |\n| TechSupport | 1 | 1.5427608422 | 0.2142073 |\n| StreamingTV | 1 | 0.1362685505 | 0.7120191 |\n| StreamingMovies | 1 | 0.5661415587 | 0.4517962 |\n| Contract | 1 | 1.7199059558 | 0.1897052 |\n| PaperlessBilling | 1 | 0.0001109168 | 0.9915971 |\n| PaymentMethod | 1 | 0.0114068740 | 0.9149453 |\n| MonthlyCharges | 1 | 0.4928515518 | 0.4826580 |\n| TotalCharges | 1 | 0.0150540974 | 0.9023485 |\n\n",
+            "text/latex": "A anova: 19 × 3\n\\begin{tabular}{r|lll}\n  & Df & Chisq & Pr(>Chisq)\\\\\n  & <dbl> & <dbl> & <dbl>\\\\\n\\hline\n\tgender & 1 & 0.3634452084 & 0.5465991\\\\\n\tSeniorCitizen & 1 & 0.1693647497 & 0.6806770\\\\\n\tPartner & 1 & 0.5774589255 & 0.4473101\\\\\n\tDependents & 1 & 0.0007120646 & 0.9787113\\\\\n\ttenure & 1 & 0.1196393789 & 0.7294259\\\\\n\tPhoneService & 1 & 0.3154652111 & 0.5743457\\\\\n\tMultipleLines & 1 & 0.0008952673 & 0.9761300\\\\\n\tInternetService & 1 & 0.0036062846 & 0.9521139\\\\\n\tOnlineSecurity & 1 & 0.0893032278 & 0.7650648\\\\\n\tOnlineBackup & 1 & 0.9174429325 & 0.3381473\\\\\n\tDeviceProtection & 1 & 1.8864414749 & 0.1696038\\\\\n\tTechSupport & 1 & 1.5427608422 & 0.2142073\\\\\n\tStreamingTV & 1 & 0.1362685505 & 0.7120191\\\\\n\tStreamingMovies & 1 & 0.5661415587 & 0.4517962\\\\\n\tContract & 1 & 1.7199059558 & 0.1897052\\\\\n\tPaperlessBilling & 1 & 0.0001109168 & 0.9915971\\\\\n\tPaymentMethod & 1 & 0.0114068740 & 0.9149453\\\\\n\tMonthlyCharges & 1 & 0.4928515518 & 0.4826580\\\\\n\tTotalCharges & 1 & 0.0150540974 & 0.9023485\\\\\n\\end{tabular}\n",
+            "text/plain": [
+              "                 Df Chisq        Pr(>Chisq)\n",
+              "gender           1  0.3634452084 0.5465991 \n",
+              "SeniorCitizen    1  0.1693647497 0.6806770 \n",
+              "Partner          1  0.5774589255 0.4473101 \n",
+              "Dependents       1  0.0007120646 0.9787113 \n",
+              "tenure           1  0.1196393789 0.7294259 \n",
+              "PhoneService     1  0.3154652111 0.5743457 \n",
+              "MultipleLines    1  0.0008952673 0.9761300 \n",
+              "InternetService  1  0.0036062846 0.9521139 \n",
+              "OnlineSecurity   1  0.0893032278 0.7650648 \n",
+              "OnlineBackup     1  0.9174429325 0.3381473 \n",
+              "DeviceProtection 1  1.8864414749 0.1696038 \n",
+              "TechSupport      1  1.5427608422 0.2142073 \n",
+              "StreamingTV      1  0.1362685505 0.7120191 \n",
+              "StreamingMovies  1  0.5661415587 0.4517962 \n",
+              "Contract         1  1.7199059558 0.1897052 \n",
+              "PaperlessBilling 1  0.0001109168 0.9915971 \n",
+              "PaymentMethod    1  0.0114068740 0.9149453 \n",
+              "MonthlyCharges   1  0.4928515518 0.4826580 \n",
+              "TotalCharges     1  0.0150540974 0.9023485 "
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            " [1] \"Terima H0: P-value > dari 0,05\" \"Terima H0: P-value > dari 0,05\"\n",
+            " [3] \"Terima H0: P-value > dari 0,05\" \"Terima H0: P-value > dari 0,05\"\n",
+            " [5] \"Terima H0: P-value > dari 0,05\" \"Terima H0: P-value > dari 0,05\"\n",
+            " [7] \"Terima H0: P-value > dari 0,05\" \"Terima H0: P-value > dari 0,05\"\n",
+            " [9] \"Terima H0: P-value > dari 0,05\" \"Terima H0: P-value > dari 0,05\"\n",
+            "[11] \"Terima H0: P-value > dari 0,05\" \"Terima H0: P-value > dari 0,05\"\n",
+            "[13] \"Terima H0: P-value > dari 0,05\" \"Terima H0: P-value > dari 0,05\"\n",
+            "[15] \"Terima H0: P-value > dari 0,05\" \"Terima H0: P-value > dari 0,05\"\n",
+            "[17] \"Terima H0: P-value > dari 0,05\" \"Terima H0: P-value > dari 0,05\"\n",
+            "[19] \"Terima H0: P-value > dari 0,05\"\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "##### VIF #####\n",
+        "library(car)\n",
+        "vif(binom.multi)"
+      ],
+      "metadata": {
+        "id": "0NnykQUd-2ok",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 86
+        },
+        "outputId": "f948bd6b-f9bc-4336-9387-f8f09d75a5bf"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<style>\n",
+              ".dl-inline {width: auto; margin:0; padding: 0}\n",
+              ".dl-inline>dt, .dl-inline>dd {float: none; width: auto; display: inline-block}\n",
+              ".dl-inline>dt::after {content: \":\\0020\"; padding-right: .5ex}\n",
+              ".dl-inline>dt:not(:first-of-type) {padding-left: .5ex}\n",
+              "</style><dl class=dl-inline><dt>gender</dt><dd>1.00299537709371</dd><dt>SeniorCitizen</dt><dd>1.00297399751688</dd><dt>Partner</dt><dd>1.0017935335266</dd><dt>Dependents</dt><dd>1.00334288066716</dd><dt>tenure</dt><dd>6.90797405949442</dd><dt>PhoneService</dt><dd>5.60448197505904</dd><dt>MultipleLines</dt><dd>5.60286434608188</dd><dt>InternetService</dt><dd>3.58054234710233</dd><dt>OnlineSecurity</dt><dd>3.51170826803442</dd><dt>OnlineBackup</dt><dd>3.48718274041143</dd><dt>DeviceProtection</dt><dd>3.51524262213381</dd><dt>TechSupport</dt><dd>3.52530140830982</dd><dt>StreamingTV</dt><dd>3.5933959392173</dd><dt>StreamingMovies</dt><dd>3.53088605565293</dd><dt>Contract</dt><dd>1.00327121269891</dd><dt>PaperlessBilling</dt><dd>1.00376922291693</dd><dt>PaymentMethod</dt><dd>1.00340158936616</dd><dt>MonthlyCharges</dt><dd>4.06956533314646</dd><dt>TotalCharges</dt><dd>10.0073514082912</dd></dl>\n"
+            ],
+            "text/markdown": "gender\n:   1.00299537709371SeniorCitizen\n:   1.00297399751688Partner\n:   1.0017935335266Dependents\n:   1.00334288066716tenure\n:   6.90797405949442PhoneService\n:   5.60448197505904MultipleLines\n:   5.60286434608188InternetService\n:   3.58054234710233OnlineSecurity\n:   3.51170826803442OnlineBackup\n:   3.48718274041143DeviceProtection\n:   3.51524262213381TechSupport\n:   3.52530140830982StreamingTV\n:   3.5933959392173StreamingMovies\n:   3.53088605565293Contract\n:   1.00327121269891PaperlessBilling\n:   1.00376922291693PaymentMethod\n:   1.00340158936616MonthlyCharges\n:   4.06956533314646TotalCharges\n:   10.0073514082912\n\n",
+            "text/latex": "\\begin{description*}\n\\item[gender] 1.00299537709371\n\\item[SeniorCitizen] 1.00297399751688\n\\item[Partner] 1.0017935335266\n\\item[Dependents] 1.00334288066716\n\\item[tenure] 6.90797405949442\n\\item[PhoneService] 5.60448197505904\n\\item[MultipleLines] 5.60286434608188\n\\item[InternetService] 3.58054234710233\n\\item[OnlineSecurity] 3.51170826803442\n\\item[OnlineBackup] 3.48718274041143\n\\item[DeviceProtection] 3.51524262213381\n\\item[TechSupport] 3.52530140830982\n\\item[StreamingTV] 3.5933959392173\n\\item[StreamingMovies] 3.53088605565293\n\\item[Contract] 1.00327121269891\n\\item[PaperlessBilling] 1.00376922291693\n\\item[PaymentMethod] 1.00340158936616\n\\item[MonthlyCharges] 4.06956533314646\n\\item[TotalCharges] 10.0073514082912\n\\end{description*}\n",
+            "text/plain": [
+              "          gender    SeniorCitizen          Partner       Dependents \n",
+              "        1.002995         1.002974         1.001794         1.003343 \n",
+              "          tenure     PhoneService    MultipleLines  InternetService \n",
+              "        6.907974         5.604482         5.602864         3.580542 \n",
+              "  OnlineSecurity     OnlineBackup DeviceProtection      TechSupport \n",
+              "        3.511708         3.487183         3.515243         3.525301 \n",
+              "     StreamingTV  StreamingMovies         Contract PaperlessBilling \n",
+              "        3.593396         3.530886         1.003271         1.003769 \n",
+              "   PaymentMethod   MonthlyCharges     TotalCharges \n",
+              "        1.003402         4.069565        10.007351 "
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "##### odds ratio #####\n",
+        "# install.packages(\"questionr\")\n",
+        "library(questionr)\n",
+        "odds.ratio(binom.multi)"
+      ],
+      "metadata": {
+        "id": "G7wmVtBi-8JO",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 759
+        },
+        "outputId": "1c941837-ff6d-4b8a-cd1a-0a77fc39d83f"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "Waiting for profiling to be done...\n",
+            "\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/html": [
+              "<table class=\"dataframe\">\n",
+              "<caption>A odds.ratio: 20 × 4</caption>\n",
+              "<thead>\n",
+              "\t<tr><th></th><th scope=col>OR</th><th scope=col>2.5 %</th><th scope=col>97.5 %</th><th scope=col>p</th></tr>\n",
+              "\t<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>\n",
+              "</thead>\n",
+              "<tbody>\n",
+              "\t<tr><th scope=row>(Intercept)</th><td>0.8117678</td><td>0.5723349</td><td>1.150981</td><td>0.2418840</td></tr>\n",
+              "\t<tr><th scope=row>gender</th><td>1.0320305</td><td>0.9314878</td><td>1.143440</td><td>0.5465991</td></tr>\n",
+              "\t<tr><th scope=row>SeniorCitizen</th><td>0.9787078</td><td>0.8833506</td><td>1.084346</td><td>0.6806770</td></tr>\n",
+              "\t<tr><th scope=row>Partner</th><td>1.0405238</td><td>0.9391970</td><td>1.152803</td><td>0.4473101</td></tr>\n",
+              "\t<tr><th scope=row>Dependents</th><td>1.0013971</td><td>0.9037942</td><td>1.109537</td><td>0.9787113</td></tr>\n",
+              "\t<tr><th scope=row>tenure</th><td>1.0011359</td><td>0.9947161</td><td>1.007599</td><td>0.7294259</td></tr>\n",
+              "\t<tr><th scope=row>PhoneService</th><td>0.9329218</td><td>0.7321023</td><td>1.188649</td><td>0.5743457</td></tr>\n",
+              "\t<tr><th scope=row>MultipleLines</th><td>0.9977891</td><td>0.8631094</td><td>1.153490</td><td>0.9761300</td></tr>\n",
+              "\t<tr><th scope=row>InternetService</th><td>1.0036199</td><td>0.8919633</td><td>1.129262</td><td>0.9521139</td></tr>\n",
+              "\t<tr><th scope=row>OnlineSecurity</th><td>0.9822759</td><td>0.8735444</td><td>1.104519</td><td>0.7650648</td></tr>\n",
+              "\t<tr><th scope=row>OnlineBackup</th><td>1.0590879</td><td>0.9417156</td><td>1.191150</td><td>0.3381473</td></tr>\n",
+              "\t<tr><th scope=row>DeviceProtection</th><td>1.0854271</td><td>0.9656254</td><td>1.220186</td><td>0.1696038</td></tr>\n",
+              "\t<tr><th scope=row>TechSupport</th><td>0.9283620</td><td>0.8255685</td><td>1.043874</td><td>0.2142073</td></tr>\n",
+              "\t<tr><th scope=row>StreamingTV</th><td>0.9780106</td><td>0.8690835</td><td>1.100564</td><td>0.7120191</td></tr>\n",
+              "\t<tr><th scope=row>StreamingMovies</th><td>0.9560055</td><td>0.8502483</td><td>1.074866</td><td>0.4517962</td></tr>\n",
+              "\t<tr><th scope=row>Contract</th><td>1.0428812</td><td>0.9794598</td><td>1.110440</td><td>0.1897052</td></tr>\n",
+              "\t<tr><th scope=row>PaperlessBilling</th><td>0.9994491</td><td>0.9020248</td><td>1.107392</td><td>0.9915971</td></tr>\n",
+              "\t<tr><th scope=row>PaymentMethod</th><td>1.0024844</td><td>0.9578572</td><td>1.049192</td><td>0.9149453</td></tr>\n",
+              "\t<tr><th scope=row>MonthlyCharges</th><td>1.0012847</td><td>0.9977025</td><td>1.004882</td><td>0.4826580</td></tr>\n",
+              "\t<tr><th scope=row>TotalCharges</th><td>0.9999947</td><td>0.9999099</td><td>1.000079</td><td>0.9023485</td></tr>\n",
+              "</tbody>\n",
+              "</table>\n"
+            ],
+            "text/markdown": "\nA odds.ratio: 20 × 4\n\n| <!--/--> | OR &lt;dbl&gt; | 2.5 % &lt;dbl&gt; | 97.5 % &lt;dbl&gt; | p &lt;dbl&gt; |\n|---|---|---|---|---|\n| (Intercept) | 0.8117678 | 0.5723349 | 1.150981 | 0.2418840 |\n| gender | 1.0320305 | 0.9314878 | 1.143440 | 0.5465991 |\n| SeniorCitizen | 0.9787078 | 0.8833506 | 1.084346 | 0.6806770 |\n| Partner | 1.0405238 | 0.9391970 | 1.152803 | 0.4473101 |\n| Dependents | 1.0013971 | 0.9037942 | 1.109537 | 0.9787113 |\n| tenure | 1.0011359 | 0.9947161 | 1.007599 | 0.7294259 |\n| PhoneService | 0.9329218 | 0.7321023 | 1.188649 | 0.5743457 |\n| MultipleLines | 0.9977891 | 0.8631094 | 1.153490 | 0.9761300 |\n| InternetService | 1.0036199 | 0.8919633 | 1.129262 | 0.9521139 |\n| OnlineSecurity | 0.9822759 | 0.8735444 | 1.104519 | 0.7650648 |\n| OnlineBackup | 1.0590879 | 0.9417156 | 1.191150 | 0.3381473 |\n| DeviceProtection | 1.0854271 | 0.9656254 | 1.220186 | 0.1696038 |\n| TechSupport | 0.9283620 | 0.8255685 | 1.043874 | 0.2142073 |\n| StreamingTV | 0.9780106 | 0.8690835 | 1.100564 | 0.7120191 |\n| StreamingMovies | 0.9560055 | 0.8502483 | 1.074866 | 0.4517962 |\n| Contract | 1.0428812 | 0.9794598 | 1.110440 | 0.1897052 |\n| PaperlessBilling | 0.9994491 | 0.9020248 | 1.107392 | 0.9915971 |\n| PaymentMethod | 1.0024844 | 0.9578572 | 1.049192 | 0.9149453 |\n| MonthlyCharges | 1.0012847 | 0.9977025 | 1.004882 | 0.4826580 |\n| TotalCharges | 0.9999947 | 0.9999099 | 1.000079 | 0.9023485 |\n\n",
+            "text/latex": "A odds.ratio: 20 × 4\n\\begin{tabular}{r|llll}\n  & OR & 2.5 \\% & 97.5 \\% & p\\\\\n  & <dbl> & <dbl> & <dbl> & <dbl>\\\\\n\\hline\n\t(Intercept) & 0.8117678 & 0.5723349 & 1.150981 & 0.2418840\\\\\n\tgender & 1.0320305 & 0.9314878 & 1.143440 & 0.5465991\\\\\n\tSeniorCitizen & 0.9787078 & 0.8833506 & 1.084346 & 0.6806770\\\\\n\tPartner & 1.0405238 & 0.9391970 & 1.152803 & 0.4473101\\\\\n\tDependents & 1.0013971 & 0.9037942 & 1.109537 & 0.9787113\\\\\n\ttenure & 1.0011359 & 0.9947161 & 1.007599 & 0.7294259\\\\\n\tPhoneService & 0.9329218 & 0.7321023 & 1.188649 & 0.5743457\\\\\n\tMultipleLines & 0.9977891 & 0.8631094 & 1.153490 & 0.9761300\\\\\n\tInternetService & 1.0036199 & 0.8919633 & 1.129262 & 0.9521139\\\\\n\tOnlineSecurity & 0.9822759 & 0.8735444 & 1.104519 & 0.7650648\\\\\n\tOnlineBackup & 1.0590879 & 0.9417156 & 1.191150 & 0.3381473\\\\\n\tDeviceProtection & 1.0854271 & 0.9656254 & 1.220186 & 0.1696038\\\\\n\tTechSupport & 0.9283620 & 0.8255685 & 1.043874 & 0.2142073\\\\\n\tStreamingTV & 0.9780106 & 0.8690835 & 1.100564 & 0.7120191\\\\\n\tStreamingMovies & 0.9560055 & 0.8502483 & 1.074866 & 0.4517962\\\\\n\tContract & 1.0428812 & 0.9794598 & 1.110440 & 0.1897052\\\\\n\tPaperlessBilling & 0.9994491 & 0.9020248 & 1.107392 & 0.9915971\\\\\n\tPaymentMethod & 1.0024844 & 0.9578572 & 1.049192 & 0.9149453\\\\\n\tMonthlyCharges & 1.0012847 & 0.9977025 & 1.004882 & 0.4826580\\\\\n\tTotalCharges & 0.9999947 & 0.9999099 & 1.000079 & 0.9023485\\\\\n\\end{tabular}\n",
+            "text/plain": [
+              "                 OR        2.5 %     97.5 %   p        \n",
+              "(Intercept)      0.8117678 0.5723349 1.150981 0.2418840\n",
+              "gender           1.0320305 0.9314878 1.143440 0.5465991\n",
+              "SeniorCitizen    0.9787078 0.8833506 1.084346 0.6806770\n",
+              "Partner          1.0405238 0.9391970 1.152803 0.4473101\n",
+              "Dependents       1.0013971 0.9037942 1.109537 0.9787113\n",
+              "tenure           1.0011359 0.9947161 1.007599 0.7294259\n",
+              "PhoneService     0.9329218 0.7321023 1.188649 0.5743457\n",
+              "MultipleLines    0.9977891 0.8631094 1.153490 0.9761300\n",
+              "InternetService  1.0036199 0.8919633 1.129262 0.9521139\n",
+              "OnlineSecurity   0.9822759 0.8735444 1.104519 0.7650648\n",
+              "OnlineBackup     1.0590879 0.9417156 1.191150 0.3381473\n",
+              "DeviceProtection 1.0854271 0.9656254 1.220186 0.1696038\n",
+              "TechSupport      0.9283620 0.8255685 1.043874 0.2142073\n",
+              "StreamingTV      0.9780106 0.8690835 1.100564 0.7120191\n",
+              "StreamingMovies  0.9560055 0.8502483 1.074866 0.4517962\n",
+              "Contract         1.0428812 0.9794598 1.110440 0.1897052\n",
+              "PaperlessBilling 0.9994491 0.9020248 1.107392 0.9915971\n",
+              "PaymentMethod    1.0024844 0.9578572 1.049192 0.9149453\n",
+              "MonthlyCharges   1.0012847 0.9977025 1.004882 0.4826580\n",
+              "TotalCharges     0.9999947 0.9999099 1.000079 0.9023485"
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "##### uji kecocokan dengan metode hosmer-lemeshow #####\n",
+        "# install.packages(\"ResourceSelection\")\n",
+        "library(ResourceSelection)\n",
+        "hl<-hoslem.test(binom.multi$y,fitted(binom.multi), g=4)\n",
+        "hl"
+      ],
+      "metadata": {
+        "id": "WBnBr6YQ-_a3",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 104
+        },
+        "outputId": "3d09f1d6-8fb4-4295-9ec0-834a55b6c23d"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "\n",
+              "\tHosmer and Lemeshow goodness of fit (GOF) test\n",
+              "\n",
+              "data:  binom.multi$y, fitted(binom.multi)\n",
+              "X-squared = 0.33278, df = 2, p-value = 0.8467\n"
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    }
+  ]
+}
