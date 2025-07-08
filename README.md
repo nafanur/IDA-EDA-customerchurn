@@ -1,6 +1,6 @@
-**Tujuan:** untuk menganalisis faktor-faktor yang mempengaruhi pelanggan dalam memutuskan untuk berhenti atau tetap berlangganan layanan perusahaan. 
-**Fokus:** pada retensi pelanggan dan mengurangi churn.
-**Data:** https://www.kaggle.com/datasets/rashadrmammadov/customer-churn-dataset
+- **Tujuan:** untuk menganalisis faktor-faktor yang mempengaruhi pelanggan dalam memutuskan untuk berhenti atau tetap berlangganan layanan perusahaan. 
+- **Fokus:** pada retensi pelanggan dan mengurangi churn.
+- **Data:** https://www.kaggle.com/datasets/rashadrmammadov/customer-churn-dataset
 
 **Question:**
 1.	Berapa % Pelanggan Churn dan pelanggan yang tetap menggunakan layanan aktif?
