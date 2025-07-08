@@ -1,5 +1,6 @@
-**TUJUAN:** untuk menganalisis faktor-faktor yang mempengaruhi pelanggan dalam memutuskan untuk berhenti atau tetap berlangganan layanan perusahaan. 
+**Tujuan:** untuk menganalisis faktor-faktor yang mempengaruhi pelanggan dalam memutuskan untuk berhenti atau tetap berlangganan layanan perusahaan. 
 **Fokus:** pada retensi pelanggan dan mengurangi churn.
+**Data:** https://www.kaggle.com/datasets/rashadrmammadov/customer-churn-dataset
 
 **Question:**
 1.	Berapa % Pelanggan Churn dan pelanggan yang tetap menggunakan layanan aktif?
@@ -25,8 +26,7 @@ Pelanggan yg tdk mendapatkan internet lebih banyak churn (34,8%) daripada yg men
 - Layanan yang Kurang Menguntungkan: Beberapa jalur telepon (‘MultipleLines’), perlindungan perangkat (‘DeviceProtection’), streaming TV, dan streaming film (‘streamingMovies’) tidak memberikan nilai tambah yang cukup kuat untuk mengurangi churn.
 
 **Analisis Regresi Logistik Multiple Biner**
-  
-a. Dengan software R Studio 
+a. Dengan software R Studio: https://colab.research.google.com/drive/1obnwyfaLDNijzFYcc0AK-Wrmsjl0vECA?usp=sharing 
 - **Uji Parsial (Wald Test)**:
 Hasil: Semua variabel memiliki p-value > 0,05, yang berarti **tidak ada variabel secara individual yang signifikan** dalam memprediksi churn.
 - **Odds Ratio:**
@@ -35,7 +35,7 @@ Hasil: Tidak ada variabel dengan odds ratio yang signifikan secara statistik, me
   Ini menunjukkan bahwa churn mungkin dipengaruhi oleh kombinasi kompleks dari berbagai faktor, atau ada faktor lain yang tidak termasuk dalam model yang lebih berpengaruh.
 - Saran: Karena hasil yang tidak signifikan, **perlu mengeksplorasi model** lain atau pendekatan berbeda (misalnya, machine learning) untuk lebih memahami faktor-faktor yang mempengaruhi churn pelanggan.
 
-b. Dengan Phyton:
+b. Dengan Phyton: https://drive.google.com/file/d/1ylxuTtp1ybbxzZmoNf38c6qeR7i9RRom/view?usp=sharing
 1. **Akurasi (Accuracy)**:
    - **49%**: Model berhasil memprediksi churn dengan benar pada 49% dari semua sampel. Ini menunjukkan bahwa **model tidak terlalu akurat.**
 2. **Presisi (Precision)**:
@@ -48,6 +48,6 @@ b. Dengan Phyton:
      - Dari semua pelanggan yang *sebenarnya tidak churn*, 63% berhasil diidentifikasi dengan benar oleh model.
    - **Kelas 1 (Churn)**: 34%
      - Dari semua pelanggan yang *sebenarnya churn*, hanya 34% yang berhasil diidentifikasi dengan benar oleh model.
-4. **Kesimpulan:** Model saat ini memiliki kinerja yang kurang baik karena dengan akurasi hanya 49%.
-
+4. nilai AUC pada ROC curve (py spark) yaitu  0.525, dimana menurut kriteria Hosmer et al., 2013, Model churn_reglog hanya sedikit lebih baik dari acak. Termasuk dalam kategori “poor discrimination”.
+5. **Kesimpulan:** Model saat ini memiliki kinerja yang kurang baik karena dengan akurasi hanya 49%.
 
